@@ -4,20 +4,12 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.NotNull;
@@ -45,13 +37,13 @@ public class QuickInfosClient implements ClientModInitializer {
 
 		// Conditions of stopping
 		boolean screenRelatedAbort =
-				client.options.hudHidden ||
-				client.getDebugHud().shouldShowDebugHud();
+			client.options.hudHidden ||
+			client.getDebugHud().shouldShowDebugHud();
 
 		// Checking if every dependency is working
 		boolean errorsRelatedAbort =
-				client.player == null ||
-				client.world == null;
+			client.player == null ||
+			client.world == null;
 
 		if (screenRelatedAbort || errorsRelatedAbort) {
 			return;
@@ -62,7 +54,11 @@ public class QuickInfosClient implements ClientModInitializer {
 		int margin = 2;
 
 		// Split the info into separate lines
-		String[] lines = String.format("%s\n%s", formatPos(client.player.getPos()), getBiomeName(client)).split("\n");
+		String[] lines = new String[]{
+			formatPos(client.player.getPos()),
+			getBiomeName(client),
+			getDirection(client.player.getYaw())
+		};
 		int y = margin;
 
 		// For each line, calculate its width and draw it right aligned
@@ -82,4 +78,31 @@ public class QuickInfosClient implements ClientModInitializer {
         BlockPos playerPos = client.player.getBlockPos();
 		Optional<RegistryKey<Biome>> biome = client.world.getBiome(playerPos).getKey();
         return biome.map(biomeRegistryKey -> biomeRegistryKey.getValue().toString()).orElse("unknown");
-	}}
+	}
+
+	public static String getDirection(float yaw) {
+		// Normalize the yaw to a value between 0 and 360
+		float normalizedYaw = (yaw % 360 + 360) % 360;
+
+		// Determine the cardinal direction based on the yaw
+		if (normalizedYaw >= 337.5 || normalizedYaw < 22.5) {
+			return "South";
+		} else if (normalizedYaw >= 22.5 && normalizedYaw < 67.5) {
+			return "South-West";
+		} else if (normalizedYaw >= 67.5 && normalizedYaw < 112.5) {
+			return "West";
+		} else if (normalizedYaw >= 112.5 && normalizedYaw < 157.5) {
+			return "North-West";
+		} else if (normalizedYaw >= 157.5 && normalizedYaw < 202.5) {
+			return "North";
+		} else if (normalizedYaw >= 202.5 && normalizedYaw < 247.5) {
+			return "North-East";
+		} else if (normalizedYaw >= 247.5 && normalizedYaw < 292.5) {
+			return "East";
+		} else if (normalizedYaw >= 292.5 && normalizedYaw < 337.5) {
+			return "South-East";
+		} else {
+			return "Unknown";
+		}
+	}
+}
