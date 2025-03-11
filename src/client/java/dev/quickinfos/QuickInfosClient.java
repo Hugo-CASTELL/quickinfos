@@ -1,28 +1,40 @@
 package dev.quickinfos;
 
+import dev.quickinfos.infos.Coordinates;
+import dev.quickinfos.infos.CurrentBiome;
+import dev.quickinfos.infos.FacingDirection;
+import dev.quickinfos.infos.Info;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.biome.Biome;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class QuickInfosClient implements ClientModInitializer {
 	// Custom Identifier for the mod in the HUD
 	public static final Identifier QUICKINFOS_LAYER = Identifier.of("quickinfos");
+	public static final HashMap<String, Info> INFOS = new HashMap<>();
+	public static final ArrayList<Info> SELECTED_INFOS = new ArrayList<>() {
+
+	};
 
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+
+		INFOS.put(Coordinates.class.getName(), new Coordinates());
+		INFOS.put(CurrentBiome.class.getName(), new CurrentBiome());
+		INFOS.put(FacingDirection.class.getName(), new FacingDirection());
+
+		SELECTED_INFOS.add(INFOS.get(Coordinates.class.getName()));
+		SELECTED_INFOS.add(INFOS.get(CurrentBiome.class.getName()));
+		SELECTED_INFOS.add(INFOS.get(FacingDirection.class.getName()));
 
 		// Attach Quickinfos layer on top of the crosshair layer
 		HudLayerRegistrationCallback.EVENT.register(
@@ -40,12 +52,16 @@ public class QuickInfosClient implements ClientModInitializer {
 			client.options.hudHidden ||
 			client.getDebugHud().shouldShowDebugHud();
 
+		// Mod related
+		boolean modRelatedAbord =
+			SELECTED_INFOS.isEmpty();
+
 		// Checking if every dependency is working
 		boolean errorsRelatedAbort =
 			client.player == null ||
 			client.world == null;
 
-		if (screenRelatedAbort || errorsRelatedAbort) {
+		if (screenRelatedAbort || modRelatedAbord || errorsRelatedAbort) {
 			return;
 		}
 
@@ -53,12 +69,8 @@ public class QuickInfosClient implements ClientModInitializer {
 		int screenWidth = client.getWindow().getScaledWidth();
 		int margin = 2;
 
-		// Split the info into separate lines
-		String[] lines = new String[]{
-			formatPos(client.player.getPos()),
-			getBiomeName(client),
-			getDirection(client.player.getYaw())
-		};
+		// Split the selected infos into separate lines
+		String[] lines = SELECTED_INFOS.stream().map(info -> info.toHUDScreen(client)).toArray(String[]::new);
 		int y = margin;
 
 		// For each line, calculate its width and draw it right aligned
@@ -67,42 +79,6 @@ public class QuickInfosClient implements ClientModInitializer {
 			int x = screenWidth - textWidth - margin;
 			drawContext.drawText(client.textRenderer, line, x, y, Colors.WHITE, false);
 			y += client.textRenderer.fontHeight;
-		}
-	}
-
-	private static String formatPos(Vec3d pos) {
-		return String.format("%.1f / %.1f / %.1f", pos.getX(), pos.getY(), pos.getZ());
-	}
-
-	public static String getBiomeName(@NotNull MinecraftClient client) {
-        BlockPos playerPos = client.player.getBlockPos();
-		Optional<RegistryKey<Biome>> biome = client.world.getBiome(playerPos).getKey();
-        return biome.map(biomeRegistryKey -> biomeRegistryKey.getValue().toString()).orElse("unknown");
-	}
-
-	public static String getDirection(float yaw) {
-		// Normalize the yaw to a value between 0 and 360
-		float normalizedYaw = (yaw % 360 + 360) % 360;
-
-		// Determine the cardinal direction based on the yaw
-		if (normalizedYaw >= 337.5 || normalizedYaw < 22.5) {
-			return "South";
-		} else if (normalizedYaw >= 22.5 && normalizedYaw < 67.5) {
-			return "South-West";
-		} else if (normalizedYaw >= 67.5 && normalizedYaw < 112.5) {
-			return "West";
-		} else if (normalizedYaw >= 112.5 && normalizedYaw < 157.5) {
-			return "North-West";
-		} else if (normalizedYaw >= 157.5 && normalizedYaw < 202.5) {
-			return "North";
-		} else if (normalizedYaw >= 202.5 && normalizedYaw < 247.5) {
-			return "North-East";
-		} else if (normalizedYaw >= 247.5 && normalizedYaw < 292.5) {
-			return "East";
-		} else if (normalizedYaw >= 292.5 && normalizedYaw < 337.5) {
-			return "South-East";
-		} else {
-			return "Unknown";
 		}
 	}
 }
