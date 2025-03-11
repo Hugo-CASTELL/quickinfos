@@ -1,6 +1,7 @@
 package dev.quickinfos.screen;
 
 import dev.quickinfos.QuickInfosClient;
+import dev.quickinfos.config.ConfigManager;
 import dev.quickinfos.infos.Info;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -50,5 +51,14 @@ public class QuickInfosScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         context.drawText(this.textRenderer, "Quick infos menu", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
+    }
+
+    @Override
+    public void close() {
+        try {
+            ConfigManager.saveConfig(QuickInfosClient.SELECTED_INFOS, QuickInfosClient.config);
+        }finally {
+            super.close();
+        }
     }
 }

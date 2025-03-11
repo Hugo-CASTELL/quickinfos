@@ -1,5 +1,7 @@
 package dev.quickinfos;
 
+import dev.quickinfos.config.Config;
+import dev.quickinfos.config.ConfigManager;
 import dev.quickinfos.infos.Coordinates;
 import dev.quickinfos.infos.CurrentBiome;
 import dev.quickinfos.infos.FacingDirection;
@@ -25,6 +27,7 @@ public class QuickInfosClient implements ClientModInitializer {
 	public static final Identifier QUICKINFOS_LAYER = Identifier.of("quickinfos");
 	public static final HashMap<String, Info> INFOS = new HashMap<>();
 	public static final ArrayList<Info> SELECTED_INFOS = new ArrayList<>();
+	public static Config config;
 
 	@Override
 	public void onInitializeClient() {
@@ -34,9 +37,23 @@ public class QuickInfosClient implements ClientModInitializer {
 		INFOS.put(CurrentBiome.class.getName(), new CurrentBiome());
 		INFOS.put(FacingDirection.class.getName(), new FacingDirection());
 
-		SELECTED_INFOS.add(INFOS.get(Coordinates.class.getName()));
-		SELECTED_INFOS.add(INFOS.get(CurrentBiome.class.getName()));
-		SELECTED_INFOS.add(INFOS.get(FacingDirection.class.getName()));
+		config = ConfigManager.loadConfig();
+
+		if(!config.isEmpty()){
+			// Saved config
+			for(String infoSaved : config.getEnabledModules()) {
+				Info info = INFOS.get(infoSaved);
+				if(info != null){
+					SELECTED_INFOS.add(info);
+				}
+			}
+		}
+		else {
+			// Default config
+			SELECTED_INFOS.add(INFOS.get(Coordinates.class.getName()));
+			SELECTED_INFOS.add(INFOS.get(CurrentBiome.class.getName()));
+			SELECTED_INFOS.add(INFOS.get(FacingDirection.class.getName()));
+		}
 
 		// Attach Quickinfos layer on top of the crosshair layer
 		HudLayerRegistrationCallback.EVENT.register(
