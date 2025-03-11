@@ -10,6 +10,11 @@ import java.util.Optional;
 
 public class CurrentBiome implements Info {
     @Override
+    public String getHumanReadableName() {
+        return "Current biome";
+    }
+
+    @Override
     public String toHUDScreen(@NotNull MinecraftClient client) {
         if (client.player == null || client.world == null) {
             return "Unknown biome";

@@ -4,12 +4,16 @@ import dev.quickinfos.infos.Coordinates;
 import dev.quickinfos.infos.CurrentBiome;
 import dev.quickinfos.infos.FacingDirection;
 import dev.quickinfos.infos.Info;
+import dev.quickinfos.screen.QuickInfosScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
@@ -20,9 +24,7 @@ public class QuickInfosClient implements ClientModInitializer {
 	// Custom Identifier for the mod in the HUD
 	public static final Identifier QUICKINFOS_LAYER = Identifier.of("quickinfos");
 	public static final HashMap<String, Info> INFOS = new HashMap<>();
-	public static final ArrayList<Info> SELECTED_INFOS = new ArrayList<>() {
-
-	};
+	public static final ArrayList<Info> SELECTED_INFOS = new ArrayList<>();
 
 	@Override
 	public void onInitializeClient() {
@@ -42,6 +44,24 @@ public class QuickInfosClient implements ClientModInitializer {
 						IdentifiedLayer.CROSSHAIR,
 						QUICKINFOS_LAYER,
 						QuickInfosClient::render));
+
+		// Attach screen to a command
+		ClientCommandRegistrationCallback.EVENT.register(
+				((commandDispatcher, registryAccess) ->
+						commandDispatcher.register(ClientCommandManager.literal("quickinfos").executes(
+								commandContext -> {
+									try{
+										MinecraftClient client = commandContext.getSource().getClient();
+										client.send(() -> client.setScreen(new QuickInfosScreen(Text.empty())));
+										return 0;
+									}catch (Throwable e){
+										commandContext.getSource().sendError(Text.of(e.toString()));
+										return 1;
+									}
+								}
+						))
+				)
+		);
 	}
 
 	private static void render(DrawContext drawContext, RenderTickCounter tickCounter) {

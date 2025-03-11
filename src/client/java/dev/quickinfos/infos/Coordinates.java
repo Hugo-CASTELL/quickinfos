@@ -7,6 +7,11 @@ import org.jetbrains.annotations.NotNull;
 public class Coordinates implements Info {
 
     @Override
+    public String getHumanReadableName() {
+        return "Coordinates";
+    }
+
+    @Override
     public String toHUDScreen(@NotNull MinecraftClient client) {
         if (client.player == null) {
             return "Unknown player position";

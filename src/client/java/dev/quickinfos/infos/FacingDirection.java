@@ -6,6 +6,11 @@ import org.jetbrains.annotations.NotNull;
 public class FacingDirection implements Info {
 
     @Override
+    public String getHumanReadableName() {
+        return "Facing direction";
+    }
+
+    @Override
     public String toHUDScreen(@NotNull MinecraftClient client) {
         if (client.player == null) {
             return "Unknown player direction";
