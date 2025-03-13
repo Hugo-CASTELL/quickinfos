@@ -1,8 +1,15 @@
-![QuickInfos](./docs/logo.png)
+<div style="display: flex; flex-direction: row; gap: 20px">
+    <img alt="QuickInfos' logo" src="docs/logo.png" style="width: 64px; height: 64px;" />
+    <img alt="QuickInfos minecraft text-like title" src="docs/title.png" />
+</div>
 
 _No bullshit. Quickly pin F3 information and statistics on your main HUD._
 
 ---
+
+<a href="https://modrinth.com/mod/fabric-api">
+    <img alt="Requires Fabric API" src="https://wsrv.nl/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40intergrav%2Fdevins-badges%403%2Fassets%2Fcozy%2Frequires%2Ffabric-api_64h.png&n=-1" />
+</a>
 
 ## ✨ What is QuickInfos ?
 
@@ -29,23 +36,23 @@ QuickInfos is a Minecraft Fabric mod that enables you to pin essential gameplay 
 
 #### Manual installation
 - Ensure filling the prerequisites
-- Grab the latest release for your MineCraft version from our [Modrinth page]() or in the [Releases](https://github.com/Hugo-CASTELL/quickinfos/releases).
-- Copy the Mod Jar into your .mods directory
+- Grab the latest release for your MineCraft version from our [Modrinth page](https://modrinth.com/mod/quickinfos) or in the [Releases](https://github.com/hugo-castell/quickinfos/releases).
+- Copy the .jar into your .mods directory
 - Launch Minecraft
 
 ## 🚀 Features & Design direction
 
 - **Easy to Toggle** : designed to provide a quick and intuitive configuration
 - **Sleek & Minimal** : designed to provide only the essentials without clutter
-- **Full debug screen support & others** : every useful value added when requested
+- **Full debug screen support & others** : every useful value added when requested [on the issue tracker](https://github.com/Hugo-CASTELL/quickinfos/issues)
 - **Every minecraft version support** : speak from itself, but works on every minecraft official version from 1.21 (except snapshots)
 
-## 🤝 Suggestions & Contributing
+## 🤝 Suggestions, Bugs & Contributing
 Contributions from the community are most welcome ! 
 
 If you have a suggestion, a bug fix, or an exciting new feature idea, please:
 
-#### Suggestions
+#### Suggestions & Bugs
 
 1. **Open an Issue**: describe your idea or report a problem -> [here](https://github.com/Hugo-CASTELL/quickinfos/issues).
 
