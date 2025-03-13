@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "quickinfos",
+
+	"version": "${version}",
+	"name": "QuickInfos",
+	"description": "QuickInfos is a simple Fabric mod that which allows you to pin statistics and informations on your main HUD",
+	"authors": [
+		"Hugo-CASTELL"
+	],
+	"contact": {
+		"sources": "https://github.com/Hugo-CASTELL/quickinfos",
+		"issues": "https://github.com/Hugo-CASTELL/quickinfos/issues"
+	},
+
+	"license": "GPL-3.0",
+	"icon": "assets/quickinfos/icon.png",
+
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"dev.quickinfos.QuickInfos"
+		],
+		"client": [
+			"dev.quickinfos.QuickInfosClient"
+		]
+	},
+
+	"mixins": [
+		"quickinfos.mixins.json",
+		{
+			"config": "quickinfos.client.mixins.json",
+			"environment": "client"
+		}
+	],
+
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
