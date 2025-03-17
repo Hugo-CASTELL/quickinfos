@@ -1,6 +1,6 @@
 package dev.quickinfos.screen;
 
-import dev.quickinfos.QuickInfosClient;
+import dev.quickinfos.StaticVariables;
 import dev.quickinfos.config.ConfigManager;
 import dev.quickinfos.infos.Info;
 import net.minecraft.client.gui.DrawContext;
@@ -15,7 +15,7 @@ public class QuickInfosScreen extends Screen {
 
     private boolean isInfoActivated(Info info){
         boolean isOn = false;
-        for(Info selectedInfo : QuickInfosClient.SELECTED_INFOS){
+        for(Info selectedInfo : StaticVariables.SELECTED_INFOS){
             if (info.getClass() == selectedInfo.getClass()) {
                 isOn = true;
                 break;
@@ -31,12 +31,12 @@ public class QuickInfosScreen extends Screen {
     @Override
     public void init() {
         int y = 40;
-        for (Info info : QuickInfosClient.INFOS.values()) {
+        for (Info info : StaticVariables.INFOS.values()) {
             ButtonWidget buttonWidget = ButtonWidget.builder(Text.of(buildMessage(info)), (btn) -> {
                 if(isInfoActivated(info)){
-                    QuickInfosClient.SELECTED_INFOS.remove(info);
+                    StaticVariables.SELECTED_INFOS.remove(info);
                 }else{
-                    QuickInfosClient.SELECTED_INFOS.add(info);
+                    StaticVariables.SELECTED_INFOS.add(info);
                 }
                 btn.setMessage(Text.of(buildMessage(info)));
             }).dimensions(40, y, 180, 20).build();
@@ -56,7 +56,7 @@ public class QuickInfosScreen extends Screen {
     @Override
     public void close() {
         try {
-            ConfigManager.saveConfig(QuickInfosClient.SELECTED_INFOS, QuickInfosClient.config);
+            ConfigManager.saveConfig(StaticVariables.SELECTED_INFOS, StaticVariables.config);
         }finally {
             super.close();
         }
