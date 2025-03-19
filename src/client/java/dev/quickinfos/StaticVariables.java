@@ -1,6 +1,9 @@
 package dev.quickinfos;
 
 import dev.quickinfos.config.Config;
+import dev.quickinfos.infos.Coordinates;
+import dev.quickinfos.infos.CurrentBiome;
+import dev.quickinfos.infos.FacingDirection;
 import dev.quickinfos.infos.Info;
 import dev.quickinfos.trackers.Tracker;
 import net.minecraft.util.Identifier;
@@ -16,4 +19,19 @@ public class StaticVariables {
     public static Config config;
 
     private StaticVariables() {}
+
+    public static void useDefaultConfig(){
+        SELECTED_INFOS.add(StaticVariables.INFOS.get(Coordinates.class.getName()));
+        SELECTED_INFOS.add(StaticVariables.INFOS.get(CurrentBiome.class.getName()));
+        SELECTED_INFOS.add(StaticVariables.INFOS.get(FacingDirection.class.getName()));
+    }
+
+    public static void useUserConfig(){
+        for(String infoSaved : StaticVariables.config.getEnabledModules()) {
+            Info info = StaticVariables.INFOS.get(infoSaved);
+            if(info != null){
+                StaticVariables.SELECTED_INFOS.add(info);
+            }
+        }
+    }
 }

@@ -1,9 +1,9 @@
 package dev.quickinfos;
 
+import org.reflections.Reflections;
 import dev.quickinfos.config.ConfigManager;
 import dev.quickinfos.infos.*;
 import dev.quickinfos.screen.QuickInfosScreen;
-import dev.quickinfos.trackers.DeathCoordinatesTracker;
 import dev.quickinfos.trackers.Tracker;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -27,41 +27,41 @@ public class QuickInfosClient implements ClientModInitializer {
 	}
 
 	private void onInitializeLoadStatic() {
-		StaticVariables.TRACKERS.put(DeathCoordinatesTracker.class.getName(), new DeathCoordinatesTracker());
+		Reflections trackersReflections = new Reflections("dev.quickinfos.trackers");
+		for (Class<? extends Tracker> trackerClass : trackersReflections.getSubTypesOf(Tracker.class)) {
+			try {
+				StaticVariables.TRACKERS.put(trackerClass.getName(), trackerClass.getDeclaredConstructor().newInstance());
+			} catch (Throwable e) {
+				System.err.println("Failed to load a tracker at start: " + e.getMessage());
+			}
+		}
 
-		StaticVariables.INFOS.put(Coordinates.class.getName(), new Coordinates());
-		StaticVariables.INFOS.put(CurrentBiome.class.getName(), new CurrentBiome());
-		StaticVariables.INFOS.put(FacingDirection.class.getName(), new FacingDirection());
-		StaticVariables.INFOS.put(TargetedBlock.class.getName(), new TargetedBlock());
-		StaticVariables.INFOS.put(DeathCoordinates.class.getName(), new DeathCoordinates());
+		Reflections infoReflections = new Reflections("dev.quickinfos.infos");
+		for (Class<? extends Info> infoClass : infoReflections.getSubTypesOf(Info.class)) {
+			try {
+				StaticVariables.INFOS.put(infoClass.getName(), infoClass.getDeclaredConstructor().newInstance());
+			} catch (Throwable e) {
+				System.err.println("Failed to load info at start: " + e.getMessage());
+			}
+		}
 	}
 
 	private void onInitializeLoadConfig() {
 		StaticVariables.config = ConfigManager.loadConfig();
-
 		if(!StaticVariables.config.isEmpty()){
-			// Saved config
-			for(String infoSaved : StaticVariables.config.getEnabledModules()) {
-				Info info = StaticVariables.INFOS.get(infoSaved);
-				if(info != null){
-					StaticVariables.SELECTED_INFOS.add(info);
-				}
-			}
+			StaticVariables.useUserConfig();
 		}
 		else {
-			// Default config
-			StaticVariables.SELECTED_INFOS.add(StaticVariables.INFOS.get(Coordinates.class.getName()));
-			StaticVariables.SELECTED_INFOS.add(StaticVariables.INFOS.get(CurrentBiome.class.getName()));
-			StaticVariables.SELECTED_INFOS.add(StaticVariables.INFOS.get(FacingDirection.class.getName()));
+			StaticVariables.useDefaultConfig();
 		}
 	}
 
 	private void onInitializeRegisterEvents() {
-		// #----------#
-		// # Trackers #
-		// #----------#
+		// #-----------------#
+		// # Attach Trackers #
+		// #-----------------#
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-			if(client.player == null && client.world == null){
+			if(client == null){
 				return;
 			}
 
@@ -106,11 +106,12 @@ public class QuickInfosClient implements ClientModInitializer {
 		MinecraftClient client = MinecraftClient.getInstance();
 
 		if( // Abort conditions
-				client.options.hudHidden ||
-						client.getDebugHud().shouldShowDebugHud() ||
-						StaticVariables.SELECTED_INFOS.isEmpty() ||
-						client.player == null ||
-						client.world == null) {
+			client == null ||
+			client.options.hudHidden ||
+			client.getDebugHud().shouldShowDebugHud() ||
+			StaticVariables.SELECTED_INFOS.isEmpty() ||
+			client.player == null ||
+			client.world == null) {
 			return;
 		}
 
