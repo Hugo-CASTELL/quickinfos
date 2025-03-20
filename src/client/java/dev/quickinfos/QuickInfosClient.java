@@ -1,9 +1,9 @@
 package dev.quickinfos;
 
 import dev.quickinfos.config.ConfigManager;
-import org.reflections.Reflections;
 import dev.quickinfos.infos.*;
 import dev.quickinfos.screen.QuickInfosScreen;
+import dev.quickinfos.trackers.DeathCoordinatesTracker;
 import dev.quickinfos.trackers.Tracker;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -27,19 +27,17 @@ public class QuickInfosClient implements ClientModInitializer {
 	}
 
 	private void onInitializeLoadStatic() {
-		Reflections trackersReflections = new Reflections("dev.quickinfos.trackers");
-		for (Class<? extends Tracker> trackerClass : trackersReflections.getSubTypesOf(Tracker.class)) {
+		for (Tracker tracker : new Tracker[] {new DeathCoordinatesTracker()}) {
 			try {
-				StaticVariables.TRACKERS.put(trackerClass.getName(), trackerClass.getDeclaredConstructor().newInstance());
+				StaticVariables.TRACKERS.put(tracker.getClass().getName(), tracker);
 			} catch (Throwable e) {
 				System.err.println("Failed to load a tracker at start: " + e.getMessage());
 			}
 		}
 
-		Reflections infoReflections = new Reflections("dev.quickinfos.infos");
-		for (Class<? extends Info> infoClass : infoReflections.getSubTypesOf(Info.class)) {
+		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new CurrentBiome(), new FacingDirection()}) {
 			try {
-				StaticVariables.INFOS_INSTANCES.put(infoClass.getName(), infoClass.getDeclaredConstructor().newInstance());
+				StaticVariables.INFOS_INSTANCES.put(info.getClass().getName(), info);
 			} catch (Throwable e) {
 				System.err.println("Failed to load info at start: " + e.getMessage());
 			}

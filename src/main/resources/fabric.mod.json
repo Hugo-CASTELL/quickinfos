@@ -18,21 +18,10 @@
 
 	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"dev.quickinfos.QuickInfos"
-		],
 		"client": [
 			"dev.quickinfos.QuickInfosClient"
 		]
 	},
-
-	"mixins": [
-		"quickinfos.mixins.json",
-		{
-			"config": "quickinfos.client.mixins.json",
-			"environment": "client"
-		}
-	],
 
 	"depends": {
 		"fabricloader": ">=0.16.10",
