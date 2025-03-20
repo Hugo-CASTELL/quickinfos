@@ -10,27 +10,33 @@ import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class StaticVariables {
     public static final Identifier QUICKINFOS_LAYER = Identifier.of("quickinfos");
-    public static final HashMap<String, Info> INFOS = new HashMap<>();
+    public static final HashMap<String, Info> INFOS_INSTANCES = new HashMap<>();
     public static final HashMap<String, Tracker> TRACKERS = new HashMap<>();
-    public static final ArrayList<Info> SELECTED_INFOS = new ArrayList<>();
+    public static final ArrayList<Info> ORDERED_INFOS = new ArrayList<>();
     public static Config config;
 
     private StaticVariables() {}
 
+    public static void useDefaultOrderedInfos() {
+        ORDERED_INFOS.addAll(INFOS_INSTANCES.values());
+    }
+
     public static void useDefaultConfig(){
-        SELECTED_INFOS.add(StaticVariables.INFOS.get(Coordinates.class.getName()));
-        SELECTED_INFOS.add(StaticVariables.INFOS.get(CurrentBiome.class.getName()));
-        SELECTED_INFOS.add(StaticVariables.INFOS.get(FacingDirection.class.getName()));
+        INFOS_INSTANCES.get(Coordinates.class.getName()).setOn(true);
+        INFOS_INSTANCES.get(CurrentBiome.class.getName()).setOn(true);
+        INFOS_INSTANCES.get(FacingDirection.class.getName()).setOn(true);
     }
 
     public static void useUserConfig(){
-        for(String infoSaved : StaticVariables.config.getEnabledModules()) {
-            Info info = StaticVariables.INFOS.get(infoSaved);
+        for (Map.Entry<String, Boolean> entry : config.getEnabledModules().entrySet()) {
+            Info info = INFOS_INSTANCES.getOrDefault(entry.getKey(), null);
             if(info != null){
-                StaticVariables.SELECTED_INFOS.add(info);
+                info.setOn(entry.getValue());
+                ORDERED_INFOS.add(info);
             }
         }
     }

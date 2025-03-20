@@ -26,16 +26,17 @@ public class ConfigManager {
         }
     }
 
-    public static void saveConfig(ArrayList<Info> infos,  Config config) {
+    public static void saveConfig(ArrayList<Info> infos, Config config) {
         config.clearEnabledModules();
         for (Info info : infos) {
-            config.addEnabledModule(info.getClass().getName());
+            config.addEnabledModule(info.getClass().getName(), info.isOn());
         }
         saveConfig(config);
     }
 
     public static void saveConfig(Config config) {
         try {
+            Files.deleteIfExists(CONFIG_FILE);
             Files.writeString(CONFIG_FILE, GSON.toJson(config));
         } catch (Throwable e) {
             System.err.println("Failed to save config: " + e.getMessage());

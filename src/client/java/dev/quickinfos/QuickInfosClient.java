@@ -1,7 +1,7 @@
 package dev.quickinfos;
 
-import org.reflections.Reflections;
 import dev.quickinfos.config.ConfigManager;
+import org.reflections.Reflections;
 import dev.quickinfos.infos.*;
 import dev.quickinfos.screen.QuickInfosScreen;
 import dev.quickinfos.trackers.Tracker;
@@ -39,7 +39,7 @@ public class QuickInfosClient implements ClientModInitializer {
 		Reflections infoReflections = new Reflections("dev.quickinfos.infos");
 		for (Class<? extends Info> infoClass : infoReflections.getSubTypesOf(Info.class)) {
 			try {
-				StaticVariables.INFOS.put(infoClass.getName(), infoClass.getDeclaredConstructor().newInstance());
+				StaticVariables.INFOS_INSTANCES.put(infoClass.getName(), infoClass.getDeclaredConstructor().newInstance());
 			} catch (Throwable e) {
 				System.err.println("Failed to load info at start: " + e.getMessage());
 			}
@@ -53,6 +53,7 @@ public class QuickInfosClient implements ClientModInitializer {
 		}
 		else {
 			StaticVariables.useDefaultConfig();
+			StaticVariables.useDefaultOrderedInfos();
 		}
 	}
 
@@ -109,16 +110,16 @@ public class QuickInfosClient implements ClientModInitializer {
 			client == null ||
 			client.options.hudHidden ||
 			client.getDebugHud().shouldShowDebugHud() ||
-			StaticVariables.SELECTED_INFOS.isEmpty() ||
+			StaticVariables.ORDERED_INFOS.isEmpty() ||
 			client.player == null ||
 			client.world == null) {
 			return;
 		}
 
 		// Split the selected infos into separate lines
-		String[] lines = StaticVariables.SELECTED_INFOS.stream().map(info -> {
+		String[] lines = StaticVariables.ORDERED_INFOS.stream().map(info -> {
 			try {
-				return info.toHUDScreen(client);
+				return info.isOn() ? info.toHUDScreen(client) : "";
 			} catch (Throwable e){
 				return "";
 			}
