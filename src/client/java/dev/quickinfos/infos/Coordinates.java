@@ -4,7 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
-public class Coordinates implements Info {
+public class Coordinates extends Info {
 
     @Override
     public String getHumanReadableName() {

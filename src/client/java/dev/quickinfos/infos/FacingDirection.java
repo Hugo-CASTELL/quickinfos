@@ -3,7 +3,7 @@ package dev.quickinfos.infos;
 import net.minecraft.client.MinecraftClient;
 import org.jetbrains.annotations.NotNull;
 
-public class FacingDirection implements Info {
+public class FacingDirection extends Info {
 
     @Override
     public String getHumanReadableName() {

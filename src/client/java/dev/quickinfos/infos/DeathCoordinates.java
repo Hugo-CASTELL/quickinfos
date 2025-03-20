@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
-public class DeathCoordinates implements Info {
+public class DeathCoordinates extends Info {
 
     @Override
     public String getHumanReadableName() {

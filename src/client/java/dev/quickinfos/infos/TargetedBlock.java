@@ -6,7 +6,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import org.jetbrains.annotations.NotNull;
 
-public class TargetedBlock implements Info {
+public class TargetedBlock extends Info {
 
     @Override
     public String getHumanReadableName() {

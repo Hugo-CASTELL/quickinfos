@@ -27,41 +27,40 @@ public class QuickInfosClient implements ClientModInitializer {
 	}
 
 	private void onInitializeLoadStatic() {
-		StaticVariables.TRACKERS.put(DeathCoordinatesTracker.class.getName(), new DeathCoordinatesTracker());
+		for (Tracker tracker : new Tracker[] {new DeathCoordinatesTracker()}) {
+			try {
+				StaticVariables.TRACKERS.put(tracker.getClass().getName(), tracker);
+			} catch (Throwable e) {
+				System.err.println("Failed to load a tracker at start: " + e.getMessage());
+			}
+		}
 
-		StaticVariables.INFOS.put(Coordinates.class.getName(), new Coordinates());
-		StaticVariables.INFOS.put(CurrentBiome.class.getName(), new CurrentBiome());
-		StaticVariables.INFOS.put(FacingDirection.class.getName(), new FacingDirection());
-		StaticVariables.INFOS.put(TargetedBlock.class.getName(), new TargetedBlock());
-		StaticVariables.INFOS.put(DeathCoordinates.class.getName(), new DeathCoordinates());
+		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new CurrentBiome(), new FacingDirection()}) {
+			try {
+				StaticVariables.INFOS_INSTANCES.put(info.getClass().getName(), info);
+			} catch (Throwable e) {
+				System.err.println("Failed to load info at start: " + e.getMessage());
+			}
+		}
 	}
 
 	private void onInitializeLoadConfig() {
 		StaticVariables.config = ConfigManager.loadConfig();
-
 		if(!StaticVariables.config.isEmpty()){
-			// Saved config
-			for(String infoSaved : StaticVariables.config.getEnabledModules()) {
-				Info info = StaticVariables.INFOS.get(infoSaved);
-				if(info != null){
-					StaticVariables.SELECTED_INFOS.add(info);
-				}
-			}
+			StaticVariables.useUserConfig();
 		}
 		else {
-			// Default config
-			StaticVariables.SELECTED_INFOS.add(StaticVariables.INFOS.get(Coordinates.class.getName()));
-			StaticVariables.SELECTED_INFOS.add(StaticVariables.INFOS.get(CurrentBiome.class.getName()));
-			StaticVariables.SELECTED_INFOS.add(StaticVariables.INFOS.get(FacingDirection.class.getName()));
+			StaticVariables.useDefaultConfig();
+			StaticVariables.useDefaultOrderedInfos();
 		}
 	}
 
 	private void onInitializeRegisterEvents() {
-		// #----------#
-		// # Trackers #
-		// #----------#
+		// #-----------------#
+		// # Attach Trackers #
+		// #-----------------#
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-			if(client.player == null && client.world == null){
+			if(client == null){
 				return;
 			}
 
@@ -106,18 +105,19 @@ public class QuickInfosClient implements ClientModInitializer {
 		MinecraftClient client = MinecraftClient.getInstance();
 
 		if( // Abort conditions
-				client.options.hudHidden ||
-						client.getDebugHud().shouldShowDebugHud() ||
-						StaticVariables.SELECTED_INFOS.isEmpty() ||
-						client.player == null ||
-						client.world == null) {
+			client == null ||
+			client.options.hudHidden ||
+			client.getDebugHud().shouldShowDebugHud() ||
+			StaticVariables.ORDERED_INFOS.isEmpty() ||
+			client.player == null ||
+			client.world == null) {
 			return;
 		}
 
 		// Split the selected infos into separate lines
-		String[] lines = StaticVariables.SELECTED_INFOS.stream().map(info -> {
+		String[] lines = StaticVariables.ORDERED_INFOS.stream().map(info -> {
 			try {
-				return info.toHUDScreen(client);
+				return info.isOn() ? info.toHUDScreen(client) : "";
 			} catch (Throwable e){
 				return "";
 			}

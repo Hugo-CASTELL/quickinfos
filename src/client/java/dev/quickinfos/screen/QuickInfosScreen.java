@@ -5,7 +5,6 @@ import dev.quickinfos.config.ConfigManager;
 import dev.quickinfos.infos.Info;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -19,22 +18,6 @@ public class QuickInfosScreen extends Screen {
 
     @Override
     public void init() {
-        int y = 40;
-        for (Info info : StaticVariables.INFOS.values()) {
-            ButtonWidget buttonWidget = ButtonWidget.builder(Text.of(buildMessage(info)), (btn) -> {
-                if(isInfoActivated(info)){
-                    StaticVariables.SELECTED_INFOS.remove(info);
-                }else{
-                    StaticVariables.SELECTED_INFOS.add(info);
-                }
-                btn.setMessage(Text.of(buildMessage(info)));
-                refreshUpDownList();
-            }).dimensions(40, y, 180, 20).build();
-            y+=25;
-
-            // Register the button widget.
-            this.addDrawableChild(buttonWidget);
-        }
         refreshUpDownList();
     }
 
@@ -47,41 +30,36 @@ public class QuickInfosScreen extends Screen {
     @Override
     public void close() {
         try {
-            ConfigManager.saveConfig(StaticVariables.SELECTED_INFOS, StaticVariables.config);
-        }finally {
+            ConfigManager.saveConfig(StaticVariables.ORDERED_INFOS, StaticVariables.config);
+        } finally {
             super.close();
         }
     }
 
-    private boolean isInfoActivated(Info info){
-        boolean isOn = false;
-        for(Info selectedInfo : StaticVariables.SELECTED_INFOS){
-            if (info.getClass() == selectedInfo.getClass()) {
-                isOn = true;
-                break;
-            }
-        }
-        return isOn;
+    public String buildMessage(Info info){
+        return String.format("%s : %s", info.getHumanReadableName(), info.isOn() ? "ON" : "OFF");
     }
 
-    private String buildMessage(Info info){
-        return String.format("%s : %s", info.getHumanReadableName(), isInfoActivated(info) ? "ON" : "OFF");
-    }
-
-    public void moveUp(UpDownWidget upDownWidget) {
-        int index = StaticVariables.SELECTED_INFOS.indexOf(upDownWidget.getInfo());
-        if(index > 0) {
-            StaticVariables.SELECTED_INFOS.remove(index);
-            StaticVariables.SELECTED_INFOS.add(index-1, upDownWidget.getInfo());
-        }
+    public void onActivate(UpDownWidget upDownWidget) {
+        Info info = upDownWidget.getInfo();
+        info.setOn(!info.isOn());
         refreshUpDownList();
     }
 
-    public void moveDown(UpDownWidget upDownWidget) {
-        int index = StaticVariables.SELECTED_INFOS.indexOf(upDownWidget.getInfo());
-        if(index != -1 && index < StaticVariables.SELECTED_INFOS.size()-1) {
-            StaticVariables.SELECTED_INFOS.remove(index);
-            StaticVariables.SELECTED_INFOS.add(index+1, upDownWidget.getInfo());
+    public void onMoveUp(UpDownWidget upDownWidget) {
+        move(upDownWidget, true);
+    }
+
+    public void onMoveDown(UpDownWidget upDownWidget) {
+        move(upDownWidget, false);
+    }
+
+    private void move(UpDownWidget upDownWidget, boolean up) {
+        int index = StaticVariables.ORDERED_INFOS.indexOf(upDownWidget.getInfo());
+        if(up ? index > 0 :
+                index != -1 && index < StaticVariables.ORDERED_INFOS.size()-1) {
+            StaticVariables.ORDERED_INFOS.remove(index);
+            StaticVariables.ORDERED_INFOS.add(index + (up ? -1 : +1), upDownWidget.getInfo());
         }
         refreshUpDownList();
     }
@@ -96,8 +74,8 @@ public class QuickInfosScreen extends Screen {
             upDownWidgets.clear();
         }
         int y = 40;
-        for(Info selectedInfo : StaticVariables.SELECTED_INFOS){
-            upDownWidgets.add(new UpDownWidget(selectedInfo, 300, y, 200, 20, this));
+        for(Info orderedInfo : StaticVariables.ORDERED_INFOS){
+            upDownWidgets.add(new UpDownWidget(orderedInfo, 40, y, 320, 20, this));
             y+= 22;
         }
         for(UpDownWidget widget : upDownWidgets){

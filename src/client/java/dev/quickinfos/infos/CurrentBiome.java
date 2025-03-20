@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class CurrentBiome implements Info {
+public class CurrentBiome extends Info {
     @Override
     public String getHumanReadableName() {
         return "Current biome";
