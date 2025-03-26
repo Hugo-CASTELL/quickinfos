@@ -17,6 +17,8 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 
+import java.util.ArrayList;
+
 public class QuickInfosClient implements ClientModInitializer {
 
 	@Override
@@ -46,7 +48,7 @@ public class QuickInfosClient implements ClientModInitializer {
 
 	private void onInitializeLoadConfig() {
 		StaticVariables.config = ConfigManager.loadConfig();
-		if(!StaticVariables.config.isEmpty()){
+		if(StaticVariables.config.isValid()){
 			StaticVariables.useUserConfig();
 		}
 		else {
@@ -115,7 +117,7 @@ public class QuickInfosClient implements ClientModInitializer {
 		}
 
 		// Split the selected infos into separate lines
-		String[] lines = StaticVariables.ORDERED_INFOS.stream().map(info -> {
+		String[] rawLines = StaticVariables.ORDERED_INFOS.stream().map(info -> {
 			try {
 				return info.isOn() ? info.toHUDScreen(client) : "";
 			} catch (Throwable e){
@@ -123,18 +125,40 @@ public class QuickInfosClient implements ClientModInitializer {
 			}
 		}).toArray(String[]::new);
 
-		// Calculate the screen width and set a margin
+		ArrayList<String> lines = new ArrayList<>();
+		for(String line : rawLines) {
+			if(line != null && !line.isEmpty()) lines.add(line) ;
+		}
+
+		// Calculate the screen width and set a y_margin
 		int screenWidth = client.getWindow().getScaledWidth();
-		int margin = 2;
-		int y = margin;
+		int y_margin = 2;
+		int y = y_margin;
 
 		// For each line, calculate its width and draw it right aligned
 		for (String line : lines) {
-			if(line != null &&  !line.isEmpty()) {
-				int textWidth = client.textRenderer.getWidth(line);
-				int x = screenWidth - textWidth - margin;
-				drawContext.drawText(client.textRenderer, line, x, y, Colors.WHITE, false);
-				y += client.textRenderer.fontHeight;
+			int textWidth = client.textRenderer.getWidth(line);
+			int bottom_top = lines.size() * (client.textRenderer.fontHeight + y_margin);
+			int x = y_margin;
+			switch (StaticVariables.POSITION){
+				case TOP_RIGHT:
+					x = screenWidth - textWidth - y_margin;
+					drawContext.drawText(client.textRenderer, line, x, y, Colors.WHITE, false);
+					y += client.textRenderer.fontHeight;
+					break;
+				case BOTTOM_RIGHT:
+					x = screenWidth - textWidth - y_margin;
+					drawContext.drawText(client.textRenderer, line, x, client.getWindow().getScaledHeight() - bottom_top + y, Colors.WHITE, false);
+					y += client.textRenderer.fontHeight;
+					break;
+				case TOP_LEFT:
+					drawContext.drawText(client.textRenderer, line, x, y, Colors.WHITE, false);
+					y += client.textRenderer.fontHeight;
+					break;
+				case BOTTOM_LEFT:
+					drawContext.drawText(client.textRenderer, line, x, client.getWindow().getScaledHeight() - bottom_top + y, Colors.WHITE, false);
+					y += client.textRenderer.fontHeight;
+					break;
 			}
 		}
 	}

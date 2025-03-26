@@ -1,6 +1,7 @@
 package dev.quickinfos;
 
 import dev.quickinfos.config.Config;
+import dev.quickinfos.enums.Positions;
 import dev.quickinfos.infos.Coordinates;
 import dev.quickinfos.infos.CurrentBiome;
 import dev.quickinfos.infos.FacingDirection;
@@ -17,6 +18,7 @@ public class StaticVariables {
     public static final HashMap<String, Info> INFOS_INSTANCES = new HashMap<>();
     public static final HashMap<String, Tracker> TRACKERS = new HashMap<>();
     public static final ArrayList<Info> ORDERED_INFOS = new ArrayList<>();
+    public static Positions POSITION;
     public static Config config;
 
     private StaticVariables() {}
@@ -29,9 +31,13 @@ public class StaticVariables {
         INFOS_INSTANCES.get(Coordinates.class.getName()).setOn(true);
         INFOS_INSTANCES.get(CurrentBiome.class.getName()).setOn(true);
         INFOS_INSTANCES.get(FacingDirection.class.getName()).setOn(true);
+
+        POSITION = Positions.TOP_RIGHT;
     }
 
     public static void useUserConfig(){
+        POSITION = config.getPosition();
+
         for (Map.Entry<String, Boolean> entry : config.getEnabledModules().entrySet()) {
             Info info = INFOS_INSTANCES.getOrDefault(entry.getKey(), null);
             if(info != null){
