@@ -1,13 +1,16 @@
 package dev.quickinfos.config;
 
+import dev.quickinfos.enums.Positions;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Config {
     private final Map<String, Boolean> enabledModules = new LinkedHashMap<>();
+    private Positions position;
 
-    public boolean isEmpty(){
-        return enabledModules.isEmpty();
+    public boolean isValid(){
+        return position != null && !enabledModules.isEmpty();
     }
 
     public Map<String, Boolean> getEnabledModules() {
@@ -20,5 +23,17 @@ public class Config {
 
     public void clearEnabledModules() {
         this.enabledModules.clear();
+    }
+
+    public Positions getPosition() {
+        return this.position;
+    }
+
+    public void clearPosition() {
+        this.position = null;
+    }
+
+    public void setPosition(Positions position) {
+        this.position = position;
     }
 }

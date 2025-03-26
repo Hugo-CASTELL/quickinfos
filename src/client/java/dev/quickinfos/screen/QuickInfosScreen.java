@@ -2,9 +2,11 @@ package dev.quickinfos.screen;
 
 import dev.quickinfos.StaticVariables;
 import dev.quickinfos.config.ConfigManager;
+import dev.quickinfos.enums.Positions;
 import dev.quickinfos.infos.Info;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class QuickInfosScreen extends Screen {
 
     @Override
     public void init() {
+        createPositionButton();
         refreshUpDownList();
     }
 
@@ -30,7 +33,7 @@ public class QuickInfosScreen extends Screen {
     @Override
     public void close() {
         try {
-            ConfigManager.saveConfig(StaticVariables.ORDERED_INFOS, StaticVariables.config);
+            ConfigManager.saveConfig(StaticVariables.POSITION, StaticVariables.ORDERED_INFOS, StaticVariables.config);
         } finally {
             super.close();
         }
@@ -38,6 +41,10 @@ public class QuickInfosScreen extends Screen {
 
     public String buildMessage(Info info){
         return String.format("%s : %s", info.getHumanReadableName(), info.isOn() ? "ON" : "OFF");
+    }
+
+    public String buildMessage(Positions position){
+        return String.format("Info position : %s", position.toString().replace("_", " "));
     }
 
     public void onActivate(UpDownWidget upDownWidget) {
@@ -73,7 +80,7 @@ public class QuickInfosScreen extends Screen {
             }
             upDownWidgets.clear();
         }
-        int y = 40;
+        int y = 80;
         for(Info orderedInfo : StaticVariables.ORDERED_INFOS){
             upDownWidgets.add(new UpDownWidget(orderedInfo, 40, y, 320, 20, this));
             y+= 22;
@@ -83,5 +90,20 @@ public class QuickInfosScreen extends Screen {
             this.addDrawableChild(widget.getCenter());
             this.addDrawableChild(widget.getDown());
         }
+    }
+
+    private void createPositionButton(){
+        ButtonWidget posButton = ButtonWidget.builder(Text.of(buildMessage(StaticVariables.POSITION)), button -> {
+                    switch (StaticVariables.POSITION){
+                        case TOP_RIGHT -> StaticVariables.POSITION = Positions.BOTTOM_RIGHT;
+                        case BOTTOM_RIGHT -> StaticVariables.POSITION = Positions.BOTTOM_LEFT;
+                        case BOTTOM_LEFT -> StaticVariables.POSITION = Positions.TOP_LEFT;
+                        case TOP_LEFT -> StaticVariables.POSITION = Positions.TOP_RIGHT;
+                    }
+                    button.setMessage(Text.of(buildMessage(StaticVariables.POSITION)));
+                })
+                .dimensions(40, 40, 160, 20)
+                .build();
+        this.addDrawableChild(posButton);
     }
 }

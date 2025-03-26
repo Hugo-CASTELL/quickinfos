@@ -2,6 +2,7 @@ package dev.quickinfos.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.quickinfos.enums.Positions;
 import dev.quickinfos.infos.Info;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -21,16 +22,21 @@ public class ConfigManager {
 
             return GSON.fromJson(Files.newBufferedReader(CONFIG_FILE), Config.class);
         } catch (Throwable e) {
-            System.err.println("Failed to load quickinfos config: " + e.getMessage());
-            return new Config();
+            Config cleanConfig = new Config();
+            saveConfig(cleanConfig);
+            return cleanConfig;
         }
     }
 
-    public static void saveConfig(ArrayList<Info> infos, Config config) {
+    public static void saveConfig(Positions position, ArrayList<Info> infos, Config config) {
+        config.clearPosition();
+        config.setPosition(position);
+
         config.clearEnabledModules();
         for (Info info : infos) {
             config.addEnabledModule(info.getClass().getName(), info.isOn());
         }
+
         saveConfig(config);
     }
 
