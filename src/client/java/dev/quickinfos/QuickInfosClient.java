@@ -37,7 +37,7 @@ public class QuickInfosClient implements ClientModInitializer {
 			}
 		}
 
-		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new CurrentBiome(), new FacingDirection()}) {
+		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new TargetedBlockCoordinates(), new CurrentBiome(), new FacingDirection()}) {
 			try {
 				StaticVariables.INFOS_INSTANCES.put(info.getClass().getName(), info);
 			} catch (Throwable e) {

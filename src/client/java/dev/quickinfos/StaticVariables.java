@@ -45,5 +45,13 @@ public class StaticVariables {
                 ORDERED_INFOS.add(info);
             }
         }
+
+        for (Info info : INFOS_INSTANCES.values()) {
+            if(!ORDERED_INFOS.contains(info)){
+                System.out.println(info.getHumanReadableName() + " not found in config, adding it to the list ----------------------");
+                ORDERED_INFOS.add(info);
+                info.setOn(false);
+            }
+        }
     }
 }
