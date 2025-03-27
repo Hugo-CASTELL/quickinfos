@@ -28,9 +28,12 @@ public class ConfigManager {
         }
     }
 
-    public static void saveConfig(Positions position, ArrayList<Info> infos, Config config) {
+    public static void saveConfig(boolean show, int toggleKeyCode, Positions position, ArrayList<Info> infos, Config config) {
         config.clearPosition();
         config.setPosition(position);
+
+        config.setShow(show);
+        config.setToggleKeyCode(toggleKeyCode);
 
         config.clearEnabledModules();
         for (Info info : infos) {

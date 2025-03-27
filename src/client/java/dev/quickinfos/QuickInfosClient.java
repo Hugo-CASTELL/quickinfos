@@ -61,7 +61,7 @@ public class QuickInfosClient implements ClientModInitializer {
 		// #-----------------#
 		// # Attach Trackers #
 		// #-----------------#
-		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
+		ClientTickEvents.START_CLIENT_TICK.register((client) -> {
 			if(client == null){
 				return;
 			}
@@ -81,6 +81,15 @@ public class QuickInfosClient implements ClientModInitializer {
 						IdentifiedLayer.CROSSHAIR,
 						StaticVariables.QUICKINFOS_LAYER,
 						QuickInfosClient::onCrosshairRender));
+
+		// #-------------#
+		// # Keybindings #
+		// #-------------#
+		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
+			while (StaticVariables.TOGGLE_KEY.wasPressed()){
+				StaticVariables.SHOW = !StaticVariables.SHOW;
+			}
+		});
 
 		// #-------------#
 		// # /quickinfos #
@@ -112,7 +121,8 @@ public class QuickInfosClient implements ClientModInitializer {
 			client.getDebugHud().shouldShowDebugHud() ||
 			StaticVariables.ORDERED_INFOS.isEmpty() ||
 			client.player == null ||
-			client.world == null) {
+			client.world == null ||
+			!StaticVariables.SHOW) {
 			return;
 		}
 

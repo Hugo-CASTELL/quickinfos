@@ -20,6 +20,7 @@ public class QuickInfosScreen extends Screen {
 
     @Override
     public void init() {
+        createToggleButton();
         createPositionButton();
         refreshUpDownList();
     }
@@ -33,7 +34,7 @@ public class QuickInfosScreen extends Screen {
     @Override
     public void close() {
         try {
-            ConfigManager.saveConfig(StaticVariables.POSITION, StaticVariables.ORDERED_INFOS, StaticVariables.config);
+            ConfigManager.saveConfig(StaticVariables.SHOW, StaticVariables.TOGGLE_KEY.getDefaultKey().getCode(), StaticVariables.POSITION, StaticVariables.ORDERED_INFOS, StaticVariables.config);
         } finally {
             super.close();
         }
@@ -80,7 +81,7 @@ public class QuickInfosScreen extends Screen {
             }
             upDownWidgets.clear();
         }
-        int y = 80;
+        int y = 100;
         for(Info orderedInfo : StaticVariables.ORDERED_INFOS){
             upDownWidgets.add(new UpDownWidget(orderedInfo, 40, y, 320, 20, this));
             y+= 22;
@@ -102,8 +103,13 @@ public class QuickInfosScreen extends Screen {
                     }
                     button.setMessage(Text.of(buildMessage(StaticVariables.POSITION)));
                 })
-                .dimensions(40, 40, 160, 20)
+                .dimensions(60, 40, 160, 20)
                 .build();
         this.addDrawableChild(posButton);
+    }
+
+    private void createToggleButton(){
+        KeybindWidget toggleButton = new KeybindWidget(StaticVariables.TOGGLE_KEY, 40, 60, 160, 20, Text.of("Toggle QuickInfos"), button -> {boolean pass = true;});
+        this.addDrawableChild(toggleButton);
     }
 }

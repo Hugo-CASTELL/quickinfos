@@ -8,6 +8,8 @@ import java.util.Map;
 public class Config {
     private final Map<String, Boolean> enabledModules = new LinkedHashMap<>();
     private Positions position;
+    private int toggleKeyCode;
+    private boolean show;
 
     public boolean isValid(){
         return position != null && !enabledModules.isEmpty();
@@ -35,5 +37,21 @@ public class Config {
 
     public void setPosition(Positions position) {
         this.position = position;
+    }
+
+    public int getToggleKeyCode() {
+        return toggleKeyCode;
+    }
+
+    public void setToggleKeyCode(int toggleKeyCode) {
+        this.toggleKeyCode = toggleKeyCode;
+    }
+
+    public boolean getShow() {
+        return show;
+    }
+
+    public void setShow(boolean show) {
+        this.show = show;
     }
 }

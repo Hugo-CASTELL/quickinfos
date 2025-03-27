@@ -7,7 +7,11 @@ import dev.quickinfos.infos.CurrentBiome;
 import dev.quickinfos.infos.FacingDirection;
 import dev.quickinfos.infos.Info;
 import dev.quickinfos.trackers.Tracker;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +23,8 @@ public class StaticVariables {
     public static final HashMap<String, Tracker> TRACKERS = new HashMap<>();
     public static final ArrayList<Info> ORDERED_INFOS = new ArrayList<>();
     public static Positions POSITION;
+    public static KeyBinding TOGGLE_KEY;
+    public static boolean SHOW;
     public static Config config;
 
     private StaticVariables() {}
@@ -33,10 +39,20 @@ public class StaticVariables {
         INFOS_INSTANCES.get(FacingDirection.class.getName()).setOn(true);
 
         POSITION = Positions.TOP_RIGHT;
+        SHOW = true;
+        int defaultKeyCode = GLFW.GLFW_KEY_K;
+        TOGGLE_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.quickinfos.toggle", // Translation key for the keybind
+                InputUtil.Type.KEYSYM,
+                defaultKeyCode,
+                "category.quickinfos.main" // Category for the controls menu
+        ));
     }
 
     public static void useUserConfig(){
         POSITION = config.getPosition();
+        SHOW = config.getShow();
+        TOGGLE_KEY = new KeyBinding(InputUtil.Type.KEYSYM.createFromCode(config.getToggleKeyCode()).getTranslationKey(), config.getToggleKeyCode(), "");
 
         for (Map.Entry<String, Boolean> entry : config.getEnabledModules().entrySet()) {
             Info info = INFOS_INSTANCES.getOrDefault(entry.getKey(), null);
