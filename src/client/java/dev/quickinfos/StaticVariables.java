@@ -24,6 +24,7 @@ public class StaticVariables {
     public static final ArrayList<Info> ORDERED_INFOS = new ArrayList<>();
     public static Positions POSITION;
     public static KeyBinding TOGGLE_KEY;
+    public static KeyBinding SHOWMENU_KEY;
     public static boolean SHOW;
     public static Config config;
 
@@ -42,10 +43,17 @@ public class StaticVariables {
         SHOW = true;
         int defaultKeyCode = GLFW.GLFW_KEY_K;
         TOGGLE_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.quickinfos.toggle", // Translation key for the keybind
+                "Toggle Key", // Translation key for the keybind
                 InputUtil.Type.KEYSYM,
                 defaultKeyCode,
-                "category.quickinfos.main" // Category for the controls menu
+                "QuickInfos" // Category for the controls menu
+        ));
+        defaultKeyCode = GLFW.GLFW_KEY_M;
+        SHOWMENU_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "Show Menu Key", // Translation key for the keybind
+                InputUtil.Type.KEYSYM,
+                defaultKeyCode,
+                "QuickInfos" // Category for the controls menu
         ));
     }
 
@@ -56,6 +64,12 @@ public class StaticVariables {
                 "Toggle Key", // Translation key for the keybind
                 InputUtil.Type.KEYSYM,
                 config.getToggleKeyCode(),
+                "QuickInfos" // Category for the controls menu
+        ));
+        SHOWMENU_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "Show Menu Key", // Translation key for the keybind
+                InputUtil.Type.KEYSYM,
+                config.getShowMenuKeyCode(),
                 "QuickInfos" // Category for the controls menu
         ));
 

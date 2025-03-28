@@ -89,6 +89,9 @@ public class QuickInfosClient implements ClientModInitializer {
 			while (StaticVariables.TOGGLE_KEY.wasPressed()){
 				StaticVariables.SHOW = !StaticVariables.SHOW;
 			}
+			while (StaticVariables.SHOWMENU_KEY.wasPressed()){
+				client.send(() -> client.setScreen(new QuickInfosScreen(Text.empty())));
+			}
 		});
 
 		// #-------------#

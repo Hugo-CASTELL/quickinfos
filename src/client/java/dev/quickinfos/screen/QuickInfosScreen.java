@@ -34,7 +34,7 @@ public class QuickInfosScreen extends Screen {
     @Override
     public void close() {
         try {
-            ConfigManager.saveConfig(StaticVariables.SHOW, StaticVariables.TOGGLE_KEY.getDefaultKey().getCode(), StaticVariables.POSITION, StaticVariables.ORDERED_INFOS, StaticVariables.config);
+            ConfigManager.saveConfig(StaticVariables.SHOW, StaticVariables.SHOWMENU_KEY.getDefaultKey().getCode(), StaticVariables.TOGGLE_KEY.getDefaultKey().getCode(), StaticVariables.POSITION, StaticVariables.ORDERED_INFOS, StaticVariables.config);
         } finally {
             super.close();
         }

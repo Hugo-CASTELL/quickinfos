@@ -10,6 +10,7 @@ public class Config {
     private final Map<String, Boolean> enabledModules = new LinkedHashMap<>();
     private Positions position;
     private int toggleKeyCode;
+    private int showMenuKeyCode;
     private boolean show;
 
     public boolean isValid(){
@@ -62,5 +63,17 @@ public class Config {
 
     public void setShow(boolean show) {
         this.show = show;
+    }
+
+    public void clearShowMenuKeyCode() {
+        this.showMenuKeyCode = GLFW.GLFW_KEY_M;
+    }
+
+    public int getShowMenuKeyCode() {
+        return showMenuKeyCode;
+    }
+
+    public void setShowMenuKeyCode(int showMenuKeyCode) {
+        this.showMenuKeyCode = showMenuKeyCode;
     }
 }
