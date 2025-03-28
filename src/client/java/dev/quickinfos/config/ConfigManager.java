@@ -32,7 +32,10 @@ public class ConfigManager {
         config.clearPosition();
         config.setPosition(position);
 
+        config.clearShow();
         config.setShow(show);
+
+        config.clearToggleKeyCode();
         config.setToggleKeyCode(toggleKeyCode);
 
         config.clearEnabledModules();

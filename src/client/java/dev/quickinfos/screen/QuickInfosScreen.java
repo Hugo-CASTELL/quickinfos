@@ -20,7 +20,6 @@ public class QuickInfosScreen extends Screen {
 
     @Override
     public void init() {
-        createToggleButton();
         createPositionButton();
         refreshUpDownList();
     }
@@ -29,6 +28,7 @@ public class QuickInfosScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         context.drawText(this.textRenderer, "Quick infos menu", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
+        context.drawText(this.textRenderer, "Checkout Minecraft default controls menu for keybindings", 40, 60 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
     }
 
     @Override
@@ -103,13 +103,9 @@ public class QuickInfosScreen extends Screen {
                     }
                     button.setMessage(Text.of(buildMessage(StaticVariables.POSITION)));
                 })
-                .dimensions(60, 40, 160, 20)
+                .dimensions(40, 65, 160, 20)
                 .build();
         this.addDrawableChild(posButton);
     }
 
-    private void createToggleButton(){
-        KeybindWidget toggleButton = new KeybindWidget(StaticVariables.TOGGLE_KEY, 40, 60, 160, 20, Text.of("Toggle QuickInfos"), button -> {boolean pass = true;});
-        this.addDrawableChild(toggleButton);
-    }
 }

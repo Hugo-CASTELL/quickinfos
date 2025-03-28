@@ -1,6 +1,7 @@
 package dev.quickinfos.config;
 
 import dev.quickinfos.enums.Positions;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,12 +40,20 @@ public class Config {
         this.position = position;
     }
 
+    public void clearToggleKeyCode() {
+        this.toggleKeyCode = GLFW.GLFW_KEY_K;
+    }
+
     public int getToggleKeyCode() {
         return toggleKeyCode;
     }
 
     public void setToggleKeyCode(int toggleKeyCode) {
         this.toggleKeyCode = toggleKeyCode;
+    }
+
+    public void clearShow() {
+        this.show = true;
     }
 
     public boolean getShow() {

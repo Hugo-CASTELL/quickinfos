@@ -52,7 +52,12 @@ public class StaticVariables {
     public static void useUserConfig(){
         POSITION = config.getPosition();
         SHOW = config.getShow();
-        TOGGLE_KEY = new KeyBinding(InputUtil.Type.KEYSYM.createFromCode(config.getToggleKeyCode()).getTranslationKey(), config.getToggleKeyCode(), "");
+        TOGGLE_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "Toggle Key", // Translation key for the keybind
+                InputUtil.Type.KEYSYM,
+                config.getToggleKeyCode(),
+                "QuickInfos" // Category for the controls menu
+        ));
 
         for (Map.Entry<String, Boolean> entry : config.getEnabledModules().entrySet()) {
             Info info = INFOS_INSTANCES.getOrDefault(entry.getKey(), null);
