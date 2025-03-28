@@ -1,5 +1,7 @@
 package dev.quickinfos.trackers;
 
+import dev.quickinfos.exceptions.CannotCheckTriggerConditionTrackerException;
+import dev.quickinfos.exceptions.CannotTriggerTrackerException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
@@ -14,13 +16,13 @@ public class DeathCoordinatesTracker implements Tracker {
 
     @Override
     public boolean shouldTrigger(@NotNull MinecraftClient client) {
-        if (client.player == null) return false;
+        if (client.player == null) throw new CannotCheckTriggerConditionTrackerException(this);
         return client.player.getHealth() == 0;
     }
 
     @Override
     public void trigger(@NotNull MinecraftClient client) {
-        if (client.player == null) return;
+        if (client.player == null) throw new CannotTriggerTrackerException(this);
         lastDeathPos = new BlockPos(client.player.getBlockPos());
     }
 }
