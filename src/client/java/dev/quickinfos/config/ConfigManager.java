@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.quickinfos.enums.Positions;
 import dev.quickinfos.infos.Info;
+import dev.quickinfos.utils.StaticUtils;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Files;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 
 public class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve("quickinfos_mod.json");
+    private static final Path CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(StaticUtils.CONFIG_FILE_PATH);
 
     public static Config loadConfig() {
         try {
@@ -28,9 +29,18 @@ public class ConfigManager {
         }
     }
 
-    public static void saveConfig(Positions position, ArrayList<Info> infos, Config config) {
+    public static void saveConfig(boolean show, int showMenuKeyCode, int toggleKeyCode, Positions position, ArrayList<Info> infos, Config config) {
         config.clearPosition();
         config.setPosition(position);
+
+        config.clearShow();
+        config.setShow(show);
+
+        config.clearToggleKeyCode();
+        config.setToggleKeyCode(toggleKeyCode);
+
+        config.clearShowMenuKeyCode();
+        config.setShowMenuKeyCode(showMenuKeyCode);
 
         config.clearEnabledModules();
         for (Info info : infos) {

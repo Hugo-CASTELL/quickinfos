@@ -1,5 +1,7 @@
 package dev.quickinfos.infos;
 
+import dev.quickinfos.exceptions.CannotRenderInfoException;
+import dev.quickinfos.utils.StaticUtils;
 import net.minecraft.client.MinecraftClient;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,10 +13,9 @@ public class FacingDirection extends Info {
     }
 
     @Override
-    public String toHUDScreen(@NotNull MinecraftClient client) {
-        if (client.player == null) {
-            return "Unknown player direction";
-        }
+    public String render(@NotNull MinecraftClient client) {
+        if (client.player == null)
+            throw new CannotRenderInfoException(this);
 
         float yaw = client.player.getYaw();
 
@@ -22,25 +23,23 @@ public class FacingDirection extends Info {
         float normalizedYaw = (yaw % 360 + 360) % 360;
 
         // Determine the cardinal direction based on the yaw
-        if (normalizedYaw >= 337.5 || normalizedYaw < 22.5) {
-            return "South";
-        } else if (normalizedYaw >= 22.5 && normalizedYaw < 67.5) {
-            return "South-West";
-        } else if (normalizedYaw >= 67.5 && normalizedYaw < 112.5) {
-            return "West";
-        } else if (normalizedYaw >= 112.5 && normalizedYaw < 157.5) {
-            return "North-West";
-        } else if (normalizedYaw >= 157.5 && normalizedYaw < 202.5) {
-            return "North";
-        } else if (normalizedYaw >= 202.5 && normalizedYaw < 247.5) {
-            return "North-East";
-        } else if (normalizedYaw >= 247.5 && normalizedYaw < 292.5) {
-            return "East";
-        } else if (normalizedYaw >= 292.5 && normalizedYaw < 337.5) {
-            return "South-East";
-        } else {
-            return "Unknown";
-        }
+        return getDirection(normalizedYaw);
+    }
+
+    public static String getDirection(double normalizedYaw) {
+        int sector = (int) ((normalizedYaw + 22.5) / 45) % 8;
+
+        return switch (sector) {
+            case 0 -> "South";
+            case 1 -> "South-West";
+            case 2 -> "West";
+            case 3 -> "North-West";
+            case 4 -> "North";
+            case 5 -> "North-East";
+            case 6 -> "East";
+            case 7 -> "South-East";
+            default -> StaticUtils.NONE_INFO_CALCULATED;
+        };
     }
 
 }

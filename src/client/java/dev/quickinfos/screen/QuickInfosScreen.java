@@ -1,6 +1,6 @@
 package dev.quickinfos.screen;
 
-import dev.quickinfos.StaticVariables;
+import dev.quickinfos.Singleton;
 import dev.quickinfos.config.ConfigManager;
 import dev.quickinfos.enums.Positions;
 import dev.quickinfos.infos.Info;
@@ -28,12 +28,13 @@ public class QuickInfosScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         context.drawText(this.textRenderer, "Quick infos menu", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
+        context.drawText(this.textRenderer, "Checkout Minecraft default controls menu for keybindings", 40, 60 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
     }
 
     @Override
     public void close() {
         try {
-            ConfigManager.saveConfig(StaticVariables.POSITION, StaticVariables.ORDERED_INFOS, StaticVariables.config);
+            ConfigManager.saveConfig(Singleton.SHOW, Singleton.SHOW_MENU_KEY.getDefaultKey().getCode(), Singleton.TOGGLE_INFO_KEY.getDefaultKey().getCode(), Singleton.POSITION, Singleton.ORDERED_INFOS, Singleton.config);
         } finally {
             super.close();
         }
@@ -62,11 +63,11 @@ public class QuickInfosScreen extends Screen {
     }
 
     private void move(UpDownWidget upDownWidget, boolean up) {
-        int index = StaticVariables.ORDERED_INFOS.indexOf(upDownWidget.getInfo());
+        int index = Singleton.ORDERED_INFOS.indexOf(upDownWidget.getInfo());
         if(up ? index > 0 :
-                index != -1 && index < StaticVariables.ORDERED_INFOS.size()-1) {
-            StaticVariables.ORDERED_INFOS.remove(index);
-            StaticVariables.ORDERED_INFOS.add(index + (up ? -1 : +1), upDownWidget.getInfo());
+                index != -1 && index < Singleton.ORDERED_INFOS.size()-1) {
+            Singleton.ORDERED_INFOS.remove(index);
+            Singleton.ORDERED_INFOS.add(index + (up ? -1 : +1), upDownWidget.getInfo());
         }
         refreshUpDownList();
     }
@@ -80,8 +81,8 @@ public class QuickInfosScreen extends Screen {
             }
             upDownWidgets.clear();
         }
-        int y = 80;
-        for(Info orderedInfo : StaticVariables.ORDERED_INFOS){
+        int y = 100;
+        for(Info orderedInfo : Singleton.ORDERED_INFOS){
             upDownWidgets.add(new UpDownWidget(orderedInfo, 40, y, 320, 20, this));
             y+= 22;
         }
@@ -93,17 +94,18 @@ public class QuickInfosScreen extends Screen {
     }
 
     private void createPositionButton(){
-        ButtonWidget posButton = ButtonWidget.builder(Text.of(buildMessage(StaticVariables.POSITION)), button -> {
-                    switch (StaticVariables.POSITION){
-                        case TOP_RIGHT -> StaticVariables.POSITION = Positions.BOTTOM_RIGHT;
-                        case BOTTOM_RIGHT -> StaticVariables.POSITION = Positions.BOTTOM_LEFT;
-                        case BOTTOM_LEFT -> StaticVariables.POSITION = Positions.TOP_LEFT;
-                        case TOP_LEFT -> StaticVariables.POSITION = Positions.TOP_RIGHT;
+        ButtonWidget posButton = ButtonWidget.builder(Text.of(buildMessage(Singleton.POSITION)), button -> {
+                    switch (Singleton.POSITION){
+                        case TOP_RIGHT -> Singleton.POSITION = Positions.BOTTOM_RIGHT;
+                        case BOTTOM_RIGHT -> Singleton.POSITION = Positions.BOTTOM_LEFT;
+                        case BOTTOM_LEFT -> Singleton.POSITION = Positions.TOP_LEFT;
+                        case TOP_LEFT -> Singleton.POSITION = Positions.TOP_RIGHT;
                     }
-                    button.setMessage(Text.of(buildMessage(StaticVariables.POSITION)));
+                    button.setMessage(Text.of(buildMessage(Singleton.POSITION)));
                 })
-                .dimensions(40, 40, 160, 20)
+                .dimensions(40, 65, 160, 20)
                 .build();
         this.addDrawableChild(posButton);
     }
+
 }
