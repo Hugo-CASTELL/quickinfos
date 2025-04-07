@@ -1,8 +1,10 @@
 package dev.quickinfos.screen;
 
 import dev.quickinfos.infos.Info;
+import dev.quickinfos.utils.ScreenUtils;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+
+import java.util.LinkedList;
 
 public class UpDownWidget {
     private final Info info;
@@ -13,36 +15,18 @@ public class UpDownWidget {
 
     public UpDownWidget(Info info, int x, int y, int width, int height, QuickInfosScreen screen) {
         this.info = info;
+        int square = height;
 
-        this.up = ButtonWidget.builder(Text.of("↑"), button -> screen.onMoveUp(this))
-                  .dimensions(x, y, height, height)
-                  .build();
-
-        this.center = ButtonWidget.builder(Text.of(screen.buildMessage(info)), button -> {
-                    screen.onActivate(this);
-                    button.setMessage(Text.of(screen.buildMessage(info)));
-                })
-                      .dimensions(x+width/8, y, 3*width/4, height)
-                      .build();
-
-        this.down = ButtonWidget.builder(Text.of("↓"), button -> screen.onMoveDown(this))
-                    .dimensions(x+width-height, y, height, height)
-                    .build();
+        this.up = ScreenUtils.createButton("↑", () -> screen.onMoveUp(this), x, y, square, square);
+        this.center = ScreenUtils.createButton(info, () -> screen.onActivate(this),x+width/8, y, 3*width/4, height);
+        this.down = ScreenUtils.createButton("↓", () -> screen.onMoveDown(this), x+width-height, y, square, square);
     }
 
     public Info getInfo() {
         return info;
     }
 
-    public ButtonWidget getUp() {
-        return up;
-    }
-
-    public ButtonWidget getCenter() {
-        return center;
-    }
-
-    public ButtonWidget getDown() {
-        return down;
+    public LinkedList<ButtonWidget> getWidgets() {
+        return new LinkedList<>() { { add(up); add(center); add(down); } };
     }
 }

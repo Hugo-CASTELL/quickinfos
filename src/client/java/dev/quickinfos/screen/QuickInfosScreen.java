@@ -4,9 +4,9 @@ import dev.quickinfos.Singleton;
 import dev.quickinfos.config.ConfigManager;
 import dev.quickinfos.enums.Positions;
 import dev.quickinfos.infos.Info;
+import dev.quickinfos.utils.ScreenUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -14,12 +14,20 @@ import java.util.ArrayList;
 public class QuickInfosScreen extends Screen {
     public ArrayList<UpDownWidget>  upDownWidgets = new ArrayList<>();
 
+    public static final Dimension TITLE_DIMENSION = new Dimension(40, 40);
+    public static final Dimension SUBTITLE_DIMENSION = new Dimension(40, TITLE_DIMENSION.getY() + 10);
+    public static final Dimension SHOW_BUTTON_DIMENSION = new Dimension(SUBTITLE_DIMENSION.getX(), SUBTITLE_DIMENSION.getY() + 15, 160, 20);
+    public static final Dimension POSITION_BUTTON_DIMENSION = new Dimension(SHOW_BUTTON_DIMENSION.getX() + SHOW_BUTTON_DIMENSION.getWidth() + 10, SHOW_BUTTON_DIMENSION.getY(), SHOW_BUTTON_DIMENSION.getWidth(), SHOW_BUTTON_DIMENSION.getHeight());
+    public static final Dimension INFO_LIST_DIMENSION = new Dimension(SHOW_BUTTON_DIMENSION.getX(), POSITION_BUTTON_DIMENSION.getY() + 10, 320, SHOW_BUTTON_DIMENSION.getHeight());
+    public static final int INFO_LIST_MARGIN = 20;
+
     public QuickInfosScreen(Text title) {
         super(title);
     }
 
     @Override
     public void init() {
+        createShowButton();
         createPositionButton();
         refreshUpDownList();
     }
@@ -27,8 +35,8 @@ public class QuickInfosScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        context.drawText(this.textRenderer, "Quick infos menu", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
-        context.drawText(this.textRenderer, "Checkout Minecraft default controls menu for keybindings", 40, 60 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
+        context.drawText(this.textRenderer, "Quick infos menu", TITLE_DIMENSION.getX(), TITLE_DIMENSION.getY(), 0xFFFFFFFF, true);
+        context.drawText(this.textRenderer, "Checkout Minecraft default controls menu for keybindings", SUBTITLE_DIMENSION.getX(), SUBTITLE_DIMENSION.getY(), 0xFFFFFFFF, true);
     }
 
     @Override
@@ -38,14 +46,6 @@ public class QuickInfosScreen extends Screen {
         } finally {
             super.close();
         }
-    }
-
-    public String buildMessage(Info info){
-        return String.format("%s : %s", info.getHumanReadableName(), info.isOn() ? "ON" : "OFF");
-    }
-
-    public String buildMessage(Positions position){
-        return String.format("Info position : %s", position.toString().replace("_", " "));
     }
 
     public void onActivate(UpDownWidget upDownWidget) {
@@ -73,39 +73,29 @@ public class QuickInfosScreen extends Screen {
     }
 
     private void refreshUpDownList(){
-        if(!upDownWidgets.isEmpty()) {
-            for(UpDownWidget widget : upDownWidgets){
-                this.remove(widget.getUp());
-                this.remove(widget.getCenter());
-                this.remove(widget.getDown());
-            }
-            upDownWidgets.clear();
-        }
-        int y = 100;
+        int y = QuickInfosScreen.INFO_LIST_DIMENSION.getY();
+        upDownWidgets.forEach(widget -> widget.getWidgets().forEach(this::remove));
+        upDownWidgets.clear();
         for(Info orderedInfo : Singleton.ORDERED_INFOS){
-            upDownWidgets.add(new UpDownWidget(orderedInfo, 40, y, 320, 20, this));
-            y+= 22;
+            upDownWidgets.add(new UpDownWidget(orderedInfo, QuickInfosScreen.INFO_LIST_DIMENSION.getX(), y, QuickInfosScreen.INFO_LIST_DIMENSION.getWidth(), QuickInfosScreen.INFO_LIST_DIMENSION.getHeight(),this));
+            y+= QuickInfosScreen.INFO_LIST_MARGIN;
         }
-        for(UpDownWidget widget : upDownWidgets){
-            this.addDrawableChild(widget.getUp());
-            this.addDrawableChild(widget.getCenter());
-            this.addDrawableChild(widget.getDown());
-        }
+        upDownWidgets.forEach(widget -> widget.getWidgets().forEach(this::addDrawableChild));
     }
 
-    private void createPositionButton(){
-        ButtonWidget posButton = ButtonWidget.builder(Text.of(buildMessage(Singleton.POSITION)), button -> {
-                    switch (Singleton.POSITION){
-                        case TOP_RIGHT -> Singleton.POSITION = Positions.BOTTOM_RIGHT;
-                        case BOTTOM_RIGHT -> Singleton.POSITION = Positions.BOTTOM_LEFT;
-                        case BOTTOM_LEFT -> Singleton.POSITION = Positions.TOP_LEFT;
-                        case TOP_LEFT -> Singleton.POSITION = Positions.TOP_RIGHT;
-                    }
-                    button.setMessage(Text.of(buildMessage(Singleton.POSITION)));
-                })
-                .dimensions(40, 65, 160, 20)
-                .build();
-        this.addDrawableChild(posButton);
+    private void createPositionButton() {
+        this.addDrawableChild(ScreenUtils.createButton(Singleton.POSITION, () -> {
+            switch (Singleton.POSITION){
+                case TOP_RIGHT -> Singleton.POSITION = Positions.BOTTOM_RIGHT;
+                case BOTTOM_RIGHT -> Singleton.POSITION = Positions.BOTTOM_LEFT;
+                case BOTTOM_LEFT -> Singleton.POSITION = Positions.TOP_LEFT;
+                case TOP_LEFT -> Singleton.POSITION = Positions.TOP_RIGHT;
+            }
+        }, QuickInfosScreen.POSITION_BUTTON_DIMENSION.getX(), QuickInfosScreen.POSITION_BUTTON_DIMENSION.getY(), QuickInfosScreen.POSITION_BUTTON_DIMENSION.getWidth(), QuickInfosScreen.POSITION_BUTTON_DIMENSION.getHeight()));
+    }
+
+    private void createShowButton(){
+        this.addDrawableChild(ScreenUtils.createButton("Show/Hide", () -> Singleton.SHOW = !Singleton.SHOW, QuickInfosScreen.SHOW_BUTTON_DIMENSION.getX(), QuickInfosScreen.SHOW_BUTTON_DIMENSION.getY(), QuickInfosScreen.SHOW_BUTTON_DIMENSION.getWidth(), QuickInfosScreen.SHOW_BUTTON_DIMENSION.getHeight()));
     }
 
 }
