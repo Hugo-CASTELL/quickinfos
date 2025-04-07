@@ -15,11 +15,20 @@ public class KeyUtils {
     }
 
     public static KeyBinding registerKeyBindingInMinecraftControls(String translationKey, int keyCode){
-        return KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                translationKey,
-                InputUtil.Type.KEYSYM,
-                keyCode,
-                StaticUtils.QUICKINFOS_CATEGORY_CONTROLS
-        ));
+        try {
+            return KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    translationKey,
+                    InputUtil.Type.KEYSYM,
+                    keyCode,
+                    StaticUtils.QUICKINFOS_CATEGORY_CONTROLS
+            ));
+        } catch (Throwable e) {
+            return KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    translationKey,
+                    InputUtil.Type.KEYSYM,
+                    DefaultConfigUtils.NONE_KEY_IF_ERROR,
+                    StaticUtils.QUICKINFOS_CATEGORY_CONTROLS
+            ));
+        }
     }
 }
