@@ -17,8 +17,8 @@ public class QuickInfosScreen extends Screen {
     public static final Dimension TITLE_DIMENSION = new Dimension(40, 40);
     public static final Dimension SUBTITLE_DIMENSION = new Dimension(40, TITLE_DIMENSION.getY() + 10);
     public static final Dimension SHOW_BUTTON_DIMENSION = new Dimension(SUBTITLE_DIMENSION.getX(), SUBTITLE_DIMENSION.getY() + 15, 160, 20);
-    public static final Dimension POSITION_BUTTON_DIMENSION = new Dimension(SHOW_BUTTON_DIMENSION.getX() + SHOW_BUTTON_DIMENSION.getWidth() + 10, SHOW_BUTTON_DIMENSION.getY(), SHOW_BUTTON_DIMENSION.getWidth(), SHOW_BUTTON_DIMENSION.getHeight());
-    public static final Dimension INFO_LIST_DIMENSION = new Dimension(SHOW_BUTTON_DIMENSION.getX(), POSITION_BUTTON_DIMENSION.getY() + 10, 320, SHOW_BUTTON_DIMENSION.getHeight());
+    public static final Dimension POSITION_BUTTON_DIMENSION = new Dimension(SHOW_BUTTON_DIMENSION.getX() + SHOW_BUTTON_DIMENSION.getWidth() + 10, SHOW_BUTTON_DIMENSION.getY(), SHOW_BUTTON_DIMENSION.getWidth() - 10, SHOW_BUTTON_DIMENSION.getHeight());
+    public static final Dimension INFO_LIST_DIMENSION = new Dimension(SHOW_BUTTON_DIMENSION.getX(), POSITION_BUTTON_DIMENSION.getY() + 25, 320, SHOW_BUTTON_DIMENSION.getHeight());
     public static final int INFO_LIST_MARGIN = 20;
 
     public QuickInfosScreen(Text title) {
