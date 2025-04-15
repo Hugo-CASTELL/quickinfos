@@ -43,7 +43,7 @@ public class QuickInfosClient implements ClientModInitializer {
 			}
 		}
 
-		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new TargetedBlockCoordinates(), new CurrentBiome(), new FacingDirection(), new FPS()}) {
+		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new TargetedBlockCoordinates(), new CurrentBiome(), new FacingDirection(), new FPS(), new Ping()}) {
 			try {
 				Singleton.INFOS_INSTANCES.put(info.getClass().getName(), info);
 			} catch (Throwable e) {
