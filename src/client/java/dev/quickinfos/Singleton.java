@@ -2,9 +2,6 @@ package dev.quickinfos;
 
 import dev.quickinfos.config.Config;
 import dev.quickinfos.enums.Positions;
-import dev.quickinfos.infos.Coordinates;
-import dev.quickinfos.infos.CurrentBiome;
-import dev.quickinfos.infos.FacingDirection;
 import dev.quickinfos.infos.Info;
 import dev.quickinfos.trackers.Tracker;
 import dev.quickinfos.utils.DefaultConfigUtils;
@@ -31,15 +28,15 @@ public class Singleton {
     private Singleton() {}
 
     public static void useDefaultConfig(){
-        INFOS_INSTANCES.get(Coordinates.class.getName()).setOn(true);
-        INFOS_INSTANCES.get(CurrentBiome.class.getName()).setOn(true);
-        INFOS_INSTANCES.get(FacingDirection.class.getName()).setOn(true);
-
-        POSITION = Positions.TOP_RIGHT;
-        SHOW = true;
+        for (String info : DefaultConfigUtils.DEFAULT_INFOS) {
+            INFOS_INSTANCES.get(info).setOn(true);
+        }
 
         TOGGLE_INFO_KEY = KeyUtils.registerToggleInfo(DefaultConfigUtils.TOGGLE_INFO_KEYCODE);
         SHOW_MENU_KEY = KeyUtils.registerShowMenu(DefaultConfigUtils.SHOW_MENU_KEYCODE);
+
+        POSITION = DefaultConfigUtils.POSITION;
+        SHOW = DefaultConfigUtils.SHOW;
     }
 
     public static void useDefaultOrderedInfos() {
@@ -63,10 +60,10 @@ public class Singleton {
             }
         }
 
-        POSITION = config.getPosition();
-        SHOW = config.getShow();
-
         TOGGLE_INFO_KEY = KeyUtils.registerToggleInfo(config.getToggleKeyCode());
         SHOW_MENU_KEY = KeyUtils.registerShowMenu(config.getShowMenuKeyCode());
+
+        POSITION = config.getPosition();
+        SHOW = config.getShow();
     }
 }

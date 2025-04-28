@@ -7,6 +7,7 @@ import dev.quickinfos.exceptions.CannotTriggerTrackerException;
 import dev.quickinfos.infos.*;
 import dev.quickinfos.trackers.DeathCoordinatesTracker;
 import dev.quickinfos.trackers.Tracker;
+import dev.quickinfos.utils.ExitUtils;
 import dev.quickinfos.utils.ScreenUtils;
 import dev.quickinfos.utils.StaticUtils;
 import net.fabricmc.api.ClientModInitializer;
@@ -42,7 +43,7 @@ public class QuickInfosClient implements ClientModInitializer {
 			}
 		}
 
-		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new TargetedBlockCoordinates(), new CurrentBiome(), new FacingDirection()}) {
+		for (Info info : new Info[] {new Coordinates(), new DeathCoordinates(), new TargetedBlock(), new TargetedBlockCoordinates(), new TargetedEntity(), new TargetedEntityCoordinates(), new CurrentBiome(), new FacingDirection(), new FPS(), new Ping()}) {
 			try {
 				Singleton.INFOS_INSTANCES.put(info.getClass().getName(), info);
 			} catch (Throwable e) {
@@ -52,14 +53,19 @@ public class QuickInfosClient implements ClientModInitializer {
 	}
 
 	private void onInitializeLoadConfig() {
-		Singleton.config = ConfigManager.loadConfig();
-		if(Singleton.config.isValid()){
-			Singleton.useUserConfig();
+		try{
+			Singleton.config = ConfigManager.loadConfig();
+			if(Singleton.config.isValid()){
+				Singleton.useUserConfig();
+				return;
+			}
 		}
-		else {
-			Singleton.useDefaultConfig();
-			Singleton.useDefaultOrderedInfos();
+		catch (Throwable e) {
+			System.out.println("Failed to load config: " + e.getMessage());
 		}
+
+		Singleton.useDefaultConfig();
+		Singleton.useDefaultOrderedInfos();
 	}
 
 	private void onInitializeRegisterEvents() {
@@ -110,10 +116,10 @@ public class QuickInfosClient implements ClientModInitializer {
 								commandContext -> {
 									try{
 										ScreenUtils.openScreen(commandContext.getSource().getClient());
-										return 0;
+										return ExitUtils.PROPER_EXIT;
 									}catch (Throwable e){
 										commandContext.getSource().sendError(Text.of(e.toString()));
-										return 1;
+										return ExitUtils.ERROR_IN_OPENED_SCREEN_EXIT;
 									}
 								}
 						))
