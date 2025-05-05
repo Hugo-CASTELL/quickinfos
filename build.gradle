@@ -22,7 +22,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"quickinfos" {
+		"quickinfo" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
